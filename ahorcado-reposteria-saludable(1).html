@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ahorcado de repostería saludable</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap">
+<style>
+:root{--ink:#3a2236;--muted:#7a5d74;--card:rgba(255,255,255,.82);--line:#f3b6cc;--key:#fff;--accent:#e8457c;--ok:#2f9460;--bad:#d43a55;--fig:#7a4a8c;--skin:#ffd9b8;--shirt:#ffb3cc;--l:90%;--s:90%;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#fbe9f4;--muted:#d0a9c6;--card:rgba(35,20,40,.82);--line:#6b3b63;--key:#3a2440;--accent:#ff7aa6;--ok:#6fe0a2;--bad:#ff8aa0;--fig:#d9a8ee;--skin:#f1c9a3;--shirt:#c05a85;--l:14%;--s:35%;color-scheme:dark}}
+:root[data-theme="dark"]{--ink:#fbe9f4;--muted:#d0a9c6;--card:rgba(35,20,40,.82);--line:#6b3b63;--key:#3a2440;--accent:#ff7aa6;--ok:#6fe0a2;--bad:#ff8aa0;--fig:#d9a8ee;--skin:#f1c9a3;--shirt:#c05a85;--l:14%;--s:35%;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:"Baloo 2",system-ui,sans-serif;background:linear-gradient(160deg,hsl(var(--h) var(--s) var(--l)),hsl(calc(var(--h) + 30) var(--s) calc(var(--l) - 6%)));transition:background 1s;display:flex;justify-content:center;padding:14px 12px 30px}
+body[data-lvl="1"]{--h:340}body[data-lvl="2"]{--h:45}body[data-lvl="3"]{--h:150}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+main{position:relative;z-index:1;width:100%;max-width:560px}
+.hud{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;font-weight:700;margin-bottom:10px}
+.hud span{background:var(--card);border:2px solid var(--line);border-radius:999px;padding:3px 14px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:22px;padding:14px;backdrop-filter:blur(6px)}
+.top{display:flex;gap:12px;align-items:center}
+#fig{width:150px;flex:none}
+#fig .part{transition:transform .7s ease-in,opacity .6s;transform-box:fill-box;transform-origin:top center}
+#fig .off{opacity:0;transform:translateY(50px) rotate(30deg)}
+#fig .ln{stroke:var(--fig);stroke-width:9;stroke-linecap:round;fill:none}
+#fig .worry{display:none}#fig.sad .worry{display:inline}#fig.sad .smile{display:none}
+#fig.hit{animation:sh .35s}@keyframes sh{25%{transform:translateX(-7px) rotate(-3deg)}75%{transform:translateX(7px) rotate(3deg)}}
+.hint small{display:block;color:var(--muted)}.hint p{margin:0;font-size:1.08rem;line-height:1.3}
+.word{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:14px 0;min-height:52px}
+.slot{width:32px;height:46px;border-bottom:4px solid var(--ink);display:flex;align-items:center;justify-content:center;font-size:1.7rem;font-weight:800}
+.slot.gap{border:0;width:16px}.slot.miss{color:var(--bad)}
+.keys{display:grid;grid-template-columns:repeat(9,1fr);gap:6px}
+.keys button{font:inherit;font-weight:700;padding:7px 0;border-radius:12px;border:2px solid var(--line);background:var(--key);color:var(--ink);cursor:pointer}
+.keys button:hover:not(:disabled){transform:translateY(-2px);border-color:var(--accent)}
+.keys .ok{background:var(--ok);border-color:var(--ok);color:#fff}.keys .no{background:var(--bad);border-color:var(--bad);color:#fff;opacity:.6}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+#toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translate(-50%,-90px);background:var(--accent);color:#fff;font-weight:700;padding:8px 18px;border-radius:999px;z-index:5;transition:transform .4s;max-width:92vw;text-align:center}
+#toast.on{transform:translate(-50%,0)}
+#ov{position:fixed;inset:0;z-index:10;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(40,15,40,.55)}
+#ov.on{display:flex}
+.box{background:var(--card);backdrop-filter:blur(8px);border:3px solid var(--line);border-radius:26px;padding:20px;text-align:center;max-width:420px;width:100%}
+.box h2{margin:6px 0;font-size:1.7rem}.box p{margin:6px 0 14px}
+.btn{font:inherit;font-weight:800;font-size:1.1rem;background:var(--accent);color:#fff;border:0;border-radius:999px;padding:10px 28px;cursor:pointer}
+.cup{width:150px;animation:bob 1.2s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-10px) scale(1.04)}}
+.eye{animation:bl 4s infinite;transform-box:fill-box;transform-origin:center}@keyframes bl{94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+.pie{position:fixed;left:-120px;top:40%;font-size:5.5rem;z-index:11;animation:fly .7s ease-in forwards}
+@keyframes fly{to{left:50%;top:42%;transform:translate(-50%,-50%) rotate(720deg) scale(1.8);opacity:0}}
+.splat{background:radial-gradient(circle,#fff 55%,#ffeaf2 100%);color:#5a2a48;border-radius:46% 54% 50% 50%/55% 45% 55% 45%;padding:26px;opacity:0;transform:scale(0);animation:sp .5s .65s forwards}
+@keyframes sp{to{opacity:1;transform:scale(1)}}
+@media (max-width:440px){.top{flex-direction:column}.slot{width:24px;height:40px;font-size:1.4rem}.keys{grid-template-columns:repeat(7,1fr)}}
+@media (prefers-reduced-motion:reduce){.cup,.eye{animation:none}}
+</style>
+</head>
+<body data-lvl="1">
+<canvas id="bg"></canvas>
+<div id="toast" role="status"></div>
+<main>
+  <div class="hud"><span id="h1"></span><span id="h2"></span><span id="h3"></span></div>
+  <section class="card">
+    <div class="top">
+      <svg id="fig" viewBox="0 -8 160 190" aria-label="Muñequito repostero">
+        <path id="lL" class="part ln" d="M72 118L60 172"/><path id="lR" class="part ln" d="M88 118L100 172"/>
+        <path id="aL" class="part ln" d="M66 76L34 106"/><path id="aR" class="part ln" d="M94 76L126 106"/>
+        <rect id="body" class="part" x="62" y="62" width="36" height="60" rx="16" fill="var(--shirt)"/>
+        <g id="head" class="part"><path d="M60 24Q54 2 71 8Q80 -4 89 8Q106 2 100 24Z" fill="#fff" stroke="var(--fig)" stroke-width="3"/>
+          <circle cx="80" cy="42" r="24" fill="var(--skin)"/><circle cx="72" cy="38" r="3.5" fill="#3a2236"/><circle cx="88" cy="38" r="3.5" fill="#3a2236"/>
+          <path class="smile" d="M70 49Q80 60 90 49" stroke="#3a2236" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path class="worry" d="M71 56Q80 47 89 56" stroke="#3a2236" stroke-width="3" fill="none" stroke-linecap="round"/></g>
+      </svg>
+      <div class="hint"><small id="cat"></small><p id="hint"></p></div>
+    </div>
+    <div class="word" id="word" aria-live="polite"></div>
+    <div class="keys" id="keys"></div>
+  </section>
+</main>
+<div id="ov"><div class="box" id="box"></div></div>
+<script>
+const RAW=`Mermelada|Fruta cocida con azúcar para untar
+Compota|Fruta cocida y suave, casi un puré dulce
+Albaricoque|Fruta de hueso dulce, ideal para rellenos
+Hojaldre|Masa crujiente hecha de muchas capas
+Kiwi|Fruta verde por dentro, rica en vitamina C
+Mandarina|Cítrico dulce y fácil de pelar
+Frutos secos|Nueces, almendras y avellanas
+Espelta|Trigo antiguo con harina integral saludable
+Calabaza|Hortaliza naranja que da humedad a los bizcochos
+Azúcar moreno|Azúcar poco refinado que conserva melaza
+Canela|Especia aromática para postres
+AOVE|Siglas de un aceite de oliva muy saludable
+Levadura|Hace que las masas suban y queden esponjosas
+Cacao puro|Polvo sin azúcar añadido, rico en antioxidantes
+Sémola|Harina gruesa de trigo para hacer cremas
+Bebida vegetal|Alternativa líquida a la leche, de avena o almendra
+Edulcorante|Endulza en lugar del azúcar
+Vainilla|Aroma dulce de la vaina de una orquídea
+Avena|Cereal rico en fibra, en copos o en harina
+Frambuesa|Fruto rojo de sabor agridulce
+Chocolate 85%|Negro, con mucho cacao y poco azúcar
+Skyr|Lácteo islandés, denso y alto en proteínas
+Yogur griego|Yogur colado, cremoso y proteico
+QFB|Siglas de un queso fresco cremoso y magro
+Plátano|Fruta que espesa helados y masas
+Mango|Fruta tropical de pulpa anaranjada
+Arándanos|Frutos rojos antioxidantes para galletas
+Crema de cacahuete|Pasta de cacahuetes tostados y triturados
+Chía|Semillas con omega-3 que se hidratan
+Gelatina|Sirve para cuajar flanes y mousses
+Toppings|Lo que se pone por encima para decorar
+Aceite de coco|Grasa vegetal que se solidifica al enfriarse
+Avellana|Fruto seco que combina con el chocolate
+Licuado|Fruta o verdura triturada en forma líquida
+Microondas|Electrodoméstico para fundir chocolate rápido
+Bananabread|Pan dulce de plátano maduro
+Masa Brisée|Masa quebrada para tartas dulces o saladas
+Masa Filo|Masa finísima y crujiente en capas
+Pera|Fruta jugosa que se hornea con manzana
+Panela|Azúcar de caña no refinado
+Mousse|Postre esponjoso, ligero y frío
+Desnatada|Leche a la que se le quitó casi toda la grasa
+Espátula|Utensilio flexible para mezclar y envolver
+Homogénea|Mezcla uniforme, sin grumos
+Ralladura|Piel fina de cítricos que aromatiza
+Cazo|Recipiente pequeño para calentar leche
+Desmoldar|Sacar la preparación de su molde
+Hidratar|Añadir líquido a gelatina o semillas
+Refrigerar|Dejar en la nevera para enfriar o cuajar
+Nutrición|Cómo el cuerpo aprovecha los alimentos`;
+const norm=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();
+const isL=c=>/[A-Z]/.test(norm(c));
+const POOL=[[],[],[],[]];
+RAW.split("\n").forEach(r=>{const [w,h]=r.split("|");const n=[...norm(w)].filter(c=>/[A-Z]/.test(c)).length;POOL[n<=6?1:n<=9?2:3].push([w,h])});
+const LV=["","Cocina fácil","Repostero","Chef experto"],ORDER=["aL","aR","lL","lR","body","head"],PER=5;
+const $=i=>document.getElementById(i),A="ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+let L=1,lost=[],round=0,deck=[],cur,guessed,wrong,over=true,prizes=0;
+/* ---- fondo interactivo ---- */
+const cv=$("bg"),cx=cv.getContext("2d"),SETS=[0,["🍓","🍌","🥝","🍊","🫐"],["🥜","🍫","🥥","🍯","🌰"],["🥧","🧁","🍰","🍪","🥛"]];
+const sp=matchMedia("(prefers-reduced-motion:reduce)").matches?.3:1;
+let W,H,items=[],parts=[],mx=-999,my=-999;
+function seed(){W=cv.width=innerWidth;H=cv.height=innerHeight;const s=SETS[L],n=Math.min(36,Math.floor(W*H/28000)+10);
+ items=Array.from({length:n},(_,i)=>({e:s[i%5],x:Math.random()*W,y:Math.random()*H,bx:(Math.random()-.5)*.8*sp,by:(Math.random()-.5)*.8*sp,px:0,py:0,s:26+Math.random()*30,r:Math.random()*6,vr:(Math.random()-.5)*.02*sp}))}
+function burst(x,y,n=10){for(let i=0;i<n;i++){const a=Math.random()*6.28,v=2+Math.random()*4;parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-2,t:1,e:SETS[L][i%5]})}}
+function tick(){cx.clearRect(0,0,W,H);cx.textAlign="center";cx.textBaseline="middle";
+ for(const o of items){const dx=o.x-mx,dy=o.y-my,d=Math.hypot(dx,dy);if(d<130&&d>1){o.px+=dx/d*(130-d)*.03;o.py+=dy/d*(130-d)*.03}
+  o.px*=.93;o.py*=.93;o.x+=o.bx+o.px;o.y+=o.by+o.py;o.r+=o.vr;
+  if(o.x<-40)o.x=W+40;if(o.x>W+40)o.x=-40;if(o.y<-40)o.y=H+40;if(o.y>H+40)o.y=-40;
+  cx.save();cx.translate(o.x,o.y);cx.rotate(o.r);cx.globalAlpha=.55;cx.font=o.s+"px serif";cx.fillText(o.e,0,0);cx.restore()}
+ parts=parts.filter(p=>p.t>0);for(const p of parts){p.x+=p.vx;p.y+=p.vy;p.vy+=.18;p.t-=.015;cx.globalAlpha=Math.max(p.t,0);cx.font="26px serif";cx.fillText(p.e,p.x,p.y)}
+ cx.globalAlpha=1;requestAnimationFrame(tick)}
+addEventListener("pointermove",e=>{mx=e.clientX;my=e.clientY});addEventListener("pointerdown",e=>burst(e.clientX,e.clientY,8));
+addEventListener("resize",seed);seed();tick();
+/* ---- interfaz ---- */
+const CUP=`<svg class="cup" viewBox="0 0 120 120" aria-hidden="true"><path d="M26 66L36 112H84L94 66Z" fill="#f0a35e"/><path d="M40 70L45 108M60 70V108M80 70L75 108" stroke="#d98840" stroke-width="3"/><path d="M20 68Q14 44 36 40Q34 22 56 22Q62 6 80 20Q100 20 96 42Q110 54 100 68Z" fill="#ff9fc0"/><circle cx="60" cy="12" r="8" fill="#d93b55"/><g class="eye"><circle cx="46" cy="52" r="5" fill="#3a2236"/><circle cx="74" cy="52" r="5" fill="#3a2236"/></g><path d="M48 60Q60 74 72 60" stroke="#3a2236" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="38" cy="60" r="5" fill="#ff6f95" opacity=".6"/><circle cx="82" cy="60" r="5" fill="#ff6f95" opacity=".6"/></svg>`;
+function show(html,label,cb){$("box").innerHTML=html+`<button class="btn" id="okb">${label}</button>`;$("ov").className="on";$("okb").onclick=()=>{$("ov").className="";cb()};$("okb").focus()}
+function toast(t){const e=$("toast");e.textContent=t;e.className="on";clearTimeout(toast.t);toast.t=setTimeout(()=>e.className="",2400)}
+function hud(){$("h1").textContent=`Nivel ${L}: ${LV[L]}`;$("h2").textContent=`Palabra ${Math.min(round+1,PER)} de ${PER}`;$("h3").textContent=`Premios de vida: ${prizes} 🧁`}
+function figure(){ORDER.forEach(id=>$(id).classList.toggle("off",lost.includes(id)));$("fig").classList.toggle("sad",lost.length>=3)}
+function startLevel(l){L=l;document.body.dataset.lvl=l;seed();lost=[];round=0;deck=[...POOL[l]].sort(()=>Math.random()-.5);figure();nextWord()}
+function nextWord(){cur=deck[round];guessed=new Set();wrong=0;over=false;$("cat").textContent="Pista";$("hint").textContent=cur[1];
+ const k=$("keys");k.innerHTML="";A.forEach(l=>{const b=document.createElement("button");b.textContent=l;b.dataset.l=l;b.setAttribute("aria-label","Letra "+l);b.onclick=()=>guess(l);k.appendChild(b)});
+ render();hud()}
+function render(reveal){const w=$("word");w.innerHTML="";[...cur[0]].forEach(c=>{const s=document.createElement("div");s.className="slot";
+ if(c===" ")s.classList.add("gap");else if(!isL(c))s.textContent=c;else if(guessed.has(norm(c)))s.textContent=c;else if(reveal){s.textContent=c;s.classList.add("miss")}w.appendChild(s)})}
+function guess(l){if(over||guessed.has(l))return;guessed.add(l);const b=document.querySelector(`.keys [data-l="${l}"]`);b.disabled=true;
+ if(norm(cur[0]).includes(l)){b.classList.add("ok");const r=b.getBoundingClientRect();burst(r.x+r.width/2,r.y,4)}
+ else{b.classList.add("no");wrong++;lost.push(ORDER[lost.length]);figure();$("fig").classList.remove("hit");void $("fig").offsetWidth;$("fig").classList.add("hit");
+  if(lost.length>=6){if(prizes>0){prizes--;lost.splice(3);figure();toast("¡Premio de vida! Cupi te devuelve 3 partes 🧁")}else{over=true;render(true);hud();return setTimeout(pastelazo,700)}}}
+ render();if([...norm(cur[0])].every(c=>!/[A-Z]/.test(c)||guessed.has(c)))winWord();hud()}
+function winWord(){over=true;burst(innerWidth/2,innerHeight/3,26);
+ if(wrong===0){prizes++;toast("¡Palabra perfecta! Ganas un premio de vida 🧁")}else toast("¡Muy bien! Era "+cur[0]);
+ round++;hud();setTimeout(()=>{if(round<PER)return nextWord();prizes++;
+  if(L<3)show(CUP+`<h2>¡Nivel ${L} superado!</h2><p>Cupi está feliz y te regala un premio de vida. Tu muñequito vuelve completo.</p>`,"Nivel "+(L+1)+" ➜",()=>startLevel(L+1));
+  else show(CUP+`<h2>¡Eres chef experto!</h2><p>Completaste los 3 niveles. ¡Cupi está feliz de la vida!</p>`,"Jugar otra vez",()=>startLevel(1))},1300)}
+function pastelazo(){const o=$("ov");$("box").innerHTML=`<div class="pie">🥧</div><div class="splat"><h2>¡PASTELAZO! 🥧💥</h2><p>La palabra era <b>${cur[0]}</b>. ${cur[1]}.</p><button class="btn" id="okb">Reintentar nivel ${L}</button></div>`;
+ o.className="on";$("okb").onclick=()=>{o.className="";startLevel(L)};burst(innerWidth/2,innerHeight/2,30);$("okb").focus()}
+addEventListener("keydown",e=>{if(e.ctrlKey||e.metaKey||e.altKey)return;const l=norm(e.key);if(l.length===1&&A.includes(l))guess(l)});
+show(CUP+`<h2>¡Hola, soy Cupi!</h2><p>Soy el postre más feliz. Adivina palabras de nutrición y repostería saludable. Cada error le quita una parte a tu muñequito... y si lo pierdes todo, ¡pastelazo! Las palabras perfectas te dan premios de vida.</p>`,"¡Empezar!",()=>startLevel(1));
+</script>
+</body>
+</html>
